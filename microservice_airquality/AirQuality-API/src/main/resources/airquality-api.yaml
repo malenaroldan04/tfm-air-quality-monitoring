@@ -1,0 +1,79 @@
+#Encabezado general
+openapi: 3.0.0
+info:
+  title: Air Quality API
+  version: 1.0.0
+
+#Paths (endpoints): Define los endpoints de la API
+paths:
+  /air-quality:
+    post:
+      summary: Insertar medición de calidad del aire
+      parameters:
+        - name: locationId
+          in: query
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AirQuality'
+      responses:
+        '200':
+          description: Medición almacenada correctamente
+        '400':
+          description: locationId es requerido como parámetro
+        '500':
+          description: Error del servidor al guardar la medición
+
+    get:
+      summary: Obtener mediciones de calidad del aire
+      parameters: #Define los parámetros en la URL (?locationId=...&time=...)
+        - name: locationId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: time
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista de mediciones
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AirQuality'
+        '404':
+          description: No se encontró la medición solicitada
+        '400':
+          description: locationId y time son parámetros obligatorios
+
+#Definimos los objetos de datos que se usan en las peticiones y respuestas
+components:
+  schemas:
+    AirQuality:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        temperature:
+          type: number
+        humidity:
+          type: number
+        pressure:
+          type: number
+        iaq:
+          type: number
+        co2:
+          type: number
+        voc:
+          type: number
